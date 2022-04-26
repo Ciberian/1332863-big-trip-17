@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Salavat Imaev](https://up.htmlacademy.ru/ecmascript/17/user/1332863).
-* Наставник: `Неизвестно`.
+* Наставник: [Алексей Хапов](https://htmlacademy.ru/profile/id118459).
 
 ---
 
