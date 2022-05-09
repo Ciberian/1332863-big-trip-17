@@ -1,7 +1,7 @@
 import TripInfoView from './view/trip-info-view.js';
 import FilterView from './view/filter-view.js';
 import SortView from './view/sort-view.js';
-import { render } from './render.js';
+import { render } from './framework/render.js';
 import TripEventsPresenter from './presenter/trip-events-presenter.js';
 
 const siteHeaderInfoElement = document.querySelector('.trip-main');

@@ -2,7 +2,7 @@ import TripListView from '../view/trip-list-view.js';
 import TripEventContainerView from '../view/trip-event-containter-view.js';
 import CreationFormView from '../view/creation-form-view.js';
 import TripEventView from '../view/trip-event-view.js';
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 
 const TRIP_EVENTS_DISPLAYED = 3;
 
