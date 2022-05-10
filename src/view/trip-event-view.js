@@ -1,7 +1,7 @@
-import { createElement } from '../framework/render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createTripEventTemplate = () =>
-	`<div class="event">
+  `<div class="event">
     <time class="event__date" datetime="2019-03-18">MAR 18</time>
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
@@ -37,20 +37,8 @@ const createTripEventTemplate = () =>
     </button>
   </div>`;
 
-export default class TripEventView {
-	getTemplate() {
-		return createTripEventTemplate();
-	}
-
-	getElement() {
-		if (!this.element) {
-			this.element = createElement(this.getTemplate());
-		}
-
-		return this.element;
-	}
-
-	removeElement() {
-		this.element = null;
-	}
+export default class TripEventView extends AbstractView {
+  get template() {
+    return createTripEventTemplate();
+  }
 }
