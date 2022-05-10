@@ -1,7 +1,7 @@
-import { createElement } from '../render.js';
+import { createElement } from '../framework/render.js';
 
-const createTripEventTemplate = () => (
-  `<div class="event">
+const createTripEventTemplate = () =>
+	`<div class="event">
     <time class="event__date" datetime="2019-03-18">MAR 18</time>
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
@@ -35,23 +35,22 @@ const createTripEventTemplate = () => (
     <button class="event__rollup-btn" type="button">
       <span class="visually-hidden">Open event</span>
     </button>
-  </div>`
-);
+  </div>`;
 
 export default class TripEventView {
-  getTemplate() {
-    return createTripEventTemplate();
-  }
+	getTemplate() {
+		return createTripEventTemplate();
+	}
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+	getElement() {
+		if (!this.element) {
+			this.element = createElement(this.getTemplate());
+		}
 
-    return this.element;
-  }
+		return this.element;
+	}
 
-  removeElement() {
-    this.element = null;
-  }
+	removeElement() {
+		this.element = null;
+	}
 }

@@ -1,21 +1,21 @@
-import { createElement } from '../render.js';
+import { createElement } from '../framework/render.js';
 
 const createTripEventContainerTemplate = () => '<li class="trip-events__item"></li>';
 
 export default class TripEventContainerView {
-  getTemplate() {
-    return createTripEventContainerTemplate();
-  }
+	getTemplate() {
+		return createTripEventContainerTemplate();
+	}
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+	getElement() {
+		if (!this.element) {
+			this.element = createElement(this.getTemplate());
+		}
 
-    return this.element;
-  }
+		return this.element;
+	}
 
-  removeElement() {
-    this.element = null;
-  }
+	removeElement() {
+		this.element = null;
+	}
 }

@@ -1,7 +1,7 @@
-import { createElement } from '../render.js';
+import { createElement } from '../framework/render.js';
 
-const createTripInfoTemplate = () => (
-  `<section class="trip-main__trip-info  trip-info">
+const createTripInfoTemplate = () =>
+	`<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
 
@@ -11,23 +11,22 @@ const createTripInfoTemplate = () => (
     <p class="trip-info__cost">
       Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
     </p>
-  </section>`
-);
+  </section>`;
 
 export default class TripInfoView {
-  getTemplate() {
-    return createTripInfoTemplate();
-  }
+	getTemplate() {
+		return createTripInfoTemplate();
+	}
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+	getElement() {
+		if (!this.element) {
+			this.element = createElement(this.getTemplate());
+		}
 
-    return this.element;
-  }
+		return this.element;
+	}
 
-  removeElement() {
-    this.element = null;
-  }
+	removeElement() {
+		this.element = null;
+	}
 }
