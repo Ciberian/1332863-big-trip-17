@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-const humanizeTaskDueDate = (releaseDate, formatType) => dayjs(releaseDate).format(formatType);
+const humanizeEventDate = (releaseDate, formatType) => dayjs(releaseDate).format(formatType);
 
 // Функция из интернета по генерации случайного числа из диапазона
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
@@ -17,4 +17,6 @@ const getRandomArrayElement = (array) => {
   return array[randomIndex];
 };
 
-export { humanizeTaskDueDate, getRandomInteger, getRandomArrayElement };
+const padStart = (number) => (number < 10) ? String(number).padStart(2, '0') : number;
+
+export { humanizeEventDate, getRandomInteger, getRandomArrayElement, padStart };

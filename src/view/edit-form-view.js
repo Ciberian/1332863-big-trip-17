@@ -1,7 +1,9 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-const createEditFormTemplate = () =>
-  `<form class="event event--edit" action="#" method="post">
+const createEditFormTemplate = (eventData, currentOffers) => {
+  const { basePrice, dateFrom, dateTo, isFavorite, offers, destination, type } = eventData;
+
+  return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -154,9 +156,29 @@ const createEditFormTemplate = () =>
       </section>
     </section>
   </form>`;
+};
 
 export default class EditFormView extends AbstractView {
-  get template() {
-    return createEditFormTemplate();
+  #eventData = null;
+  #offers = null;
+
+  constructor(eventData, offers) {
+    super();
+    this.#eventData = eventData;
+    this.#offers = offers;
   }
+
+  get template() {
+    return createEditFormTemplate(this.#eventData, this.#offers);
+  }
+
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }
