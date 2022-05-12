@@ -55,7 +55,7 @@ const createTripEventTemplate = (eventData, currentOffers) => {
       <p class="event__time">
         <time class="event__start-time" datetime="${dateFrom}">${humanizeEventDate(dateFrom, 'HH:MM')}</time>
         &mdash;
-        <time class="event__end-time" datetime="${dateTo}">${humanizeEventDate(dateFrom, 'HH:MM')}</time>
+        <time class="event__end-time" datetime="${dateTo}">${humanizeEventDate(dateTo, 'HH:MM')}</time>
       </p>
       <p class="event__duration">${getEventDuration()}</p>
     </div>

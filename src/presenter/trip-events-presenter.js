@@ -4,21 +4,18 @@ import TripEventView from '../view/trip-event-view.js';
 import EditFormView from '../view/edit-form-view.js';
 import { render, replace } from '../framework/render.js';
 
-const addEditForm = (eventData, offers, tripEventComponent) => {
+const addEditForm = (eventData, offersData, tripEventComponent) => {
   if(document.querySelector('.event--edit')) {
     removeEditForm();
   }
 
-  const selectedOffers = offers.filter(({id}) => eventData.offers.some((offerId) => offerId === Number(id)));
-  const editFormComponent = new EditFormView(eventData, selectedOffers);
+  const editFormComponent = new EditFormView(eventData, offersData);
 
   replace(editFormComponent, tripEventComponent);
-  document.body.classList.add('hide-overflow');
   editFormComponent.setClickHandler(() => onCloseBtnClick(editFormComponent, tripEventComponent));
 };
 
 function removeEditForm(editFormComponent, tripEventComponent) {
-  document.body.classList.remove('hide-overflow');
   replace(tripEventComponent, editFormComponent);
 }
 
@@ -54,7 +51,7 @@ export default class TripEventsPresenter {
 
   #renderEvent = (eventData, currentOffers) => {
     const tripEventComponent = new TripEventView(eventData, currentOffers);
-    tripEventComponent.setClickHandler(() => addEditForm(eventData, currentOffers, tripEventComponent));
+    tripEventComponent.setClickHandler(() => addEditForm(eventData, this.#offers, tripEventComponent));
     render(tripEventComponent, this.#tripEventContainerComponent.element);
   };
 
