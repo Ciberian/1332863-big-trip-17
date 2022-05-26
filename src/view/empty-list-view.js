@@ -21,7 +21,7 @@ const getMessage = (filterType) => {
 
 const createEmptyListMessage = (filterType) => `<p class="trip-events__msg">${getMessage(filterType)}</p>`;
 
-export default class TripInfoView extends AbstractView {
+export default class EmptyListView extends AbstractView {
   #filterType = null;
 
   constructor(filterType) {
