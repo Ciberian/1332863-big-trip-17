@@ -2,7 +2,20 @@ import TripListView from '../view/trip-event-list-view.js';
 import TripEventContainerView from '../view/trip-event-containter-view.js';
 import TripEventView from '../view/trip-event-view.js';
 import EditFormView from '../view/edit-form-view.js';
+import CreationFormView from '../view/creation-form-view.js';
 import { render, replace } from '../framework/render.js';
+
+const createEventBtn = document.querySelector('.trip-main__event-add-btn');
+
+const addCreateForm = () => {
+  const createFormContainerComponent = new TripEventContainerView();
+  const createFormComponent = new CreationFormView();
+  render(createFormContainerComponent, document.querySelector('.trip-events__list'), 'AFTERBEGIN');
+  render(createFormComponent, createFormContainerComponent.element);
+  createEventBtn.disabled = true;
+};
+
+createEventBtn.addEventListener('click', addCreateForm);
 
 const addEditForm = (eventData, offersData, tripEventComponent) => {
   if(document.querySelector('.event--edit')) {
@@ -32,7 +45,6 @@ const getCurrentOffers = (eventData, offersData) => {
 
 export default class TripEventsPresenter {
   #tripListComponent = new TripListView();
-  #tripEventContainerComponent = new TripEventContainerView();
   #pointsContainer = null;
   #pointsModel = null;
   #points = [];
@@ -51,13 +63,16 @@ export default class TripEventsPresenter {
 
   #renderEvent = (eventData, currentOffers) => {
     const tripEventComponent = new TripEventView(eventData, currentOffers);
+    const tripEventContainerComponent = new TripEventContainerView();
+
     tripEventComponent.setClickHandler(() => addEditForm(eventData, this.#offers, tripEventComponent));
-    render(tripEventComponent, this.#tripEventContainerComponent.element);
+
+    render(tripEventContainerComponent, this.#tripListComponent.element);
+    render(tripEventComponent, tripEventContainerComponent.element);
   };
 
   #renderEventList = () => {
     render(this.#tripListComponent, this.#pointsContainer);
-    render(this.#tripEventContainerComponent, this.#tripListComponent.element);
 
     for (let i = 0; i < this.#points.length; i++) {
       this.#renderEvent(this.#points[i], getCurrentOffers(this.#points[i], this.#offers));
