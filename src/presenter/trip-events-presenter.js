@@ -6,16 +6,15 @@ import TripEventContainerView from '../view/trip-event-containter-view.js';
 import TripEventView from '../view/trip-event-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import EditFormView from '../view/edit-form-view.js';
-import CreationFormView from '../view/creation-form-view.js';
 import { render, replace } from '../framework/render.js';
 
 const siteHeaderInfoElement = document.querySelector('.trip-main');
 const siteHeaderFilterElement = siteHeaderInfoElement.querySelector('.trip-controls__filters');
 const createEventBtn = document.querySelector('.trip-main__event-add-btn');
 
-const addCreateForm = () => {
+const addCreateForm = (eventData, offersData) => {
   const createFormContainerComponent = new TripEventContainerView();
-  const createFormComponent = new CreationFormView();
+  const createFormComponent = new EditFormView(eventData, offersData);
   render(createFormContainerComponent, document.querySelector('.trip-events__list'), 'AFTERBEGIN');
   render(createFormComponent, createFormContainerComponent.element);
   createEventBtn.disabled = true;
