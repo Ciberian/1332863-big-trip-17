@@ -50,20 +50,24 @@ const getCurrentOffers = (eventData, offersData) => {
 
 export default class TripEventsPresenter {
   #tripListComponent = new TripListView();
-  #pointsContainer = null;
-  #pointsModel = null;
-  #points = [];
+  #eventsContainer = null;
+  #eventsModel = null;
+  #events = [];
   #offers = [];
 
-  constructor(pointsContainer, pointsModel) {
-    this.#pointsContainer = pointsContainer;
-    this.#pointsModel = pointsModel;
-    this.#points = [...this.#pointsModel.points];
-    this.#offers = [...this.#pointsModel.offers];
+  constructor(eventsContainer, eventsModel) {
+    this.#eventsContainer = eventsContainer;
+    this.#eventsModel = eventsModel;
+    this.#offers = [...this.#eventsModel.offers];
+  }
+
+  get tripEvents() {
+    this.#events = this.#eventsModel.events;
+    return this.#events;
   }
 
   init = () => {
-    render(new FilterView(this.#points.length), siteHeaderFilterElement);
+    render(new FilterView(this.#events.length), siteHeaderFilterElement);
     this.#renderEventList();
   };
 
@@ -78,17 +82,17 @@ export default class TripEventsPresenter {
   };
 
   #renderEventList = () => {
-    if (this.#points.length === 0) {
-      render(new EmptyListView('Everything'), this.#pointsContainer);
+    if (this.#events.length === 0) {
+      render(new EmptyListView('Everything'), this.#eventsContainer);
       return;
     }
 
     render(new TripInfoView(), siteHeaderInfoElement, 'afterbegin');
-    render(new SortView(), this.#pointsContainer);
-    render(this.#tripListComponent, this.#pointsContainer);
+    render(new SortView(), this.#eventsContainer);
+    render(this.#tripListComponent, this.#eventsContainer);
 
-    for (let i = 0; i < this.#points.length; i++) {
-      this.#renderEvent(this.#points[i], getCurrentOffers(this.#points[i], this.#offers));
+    for (let i = 0; i < this.#events.length; i++) {
+      this.#renderEvent(this.#events[i], getCurrentOffers(this.#events[i], this.#offers));
     }
   };
 }
