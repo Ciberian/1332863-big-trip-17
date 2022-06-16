@@ -17,9 +17,9 @@ const FilterType = {
 };
 
 const SortType = {
-  DAY_DOWN: 'day',
-  PRICE_DOWN: 'price-down',
-  TIME_DOWN: 'time-down'
+  DAY_DOWN: 'sort-day',
+  TIME_DOWN: 'sort-time',
+  PRICE_DOWN: 'sort-price'
 };
 
 const UpdateType = {

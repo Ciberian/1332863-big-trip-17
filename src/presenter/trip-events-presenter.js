@@ -5,7 +5,11 @@ import TripEventContainerView from '../view/trip-event-containter-view.js';
 import TripEventView from '../view/trip-event-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import EditFormView from '../view/edit-form-view.js';
-import { render, replace } from '../framework/render.js';
+import LoadingView from '../view/loading-view.js';
+import { eventsFilter } from '../utils/events-filter.js';
+import { getEventsDuration } from '../utils/trip-events.js';
+import { FilterType, SortType, UpdateType } from '../const.js';
+import { render, remove, replace } from '../framework/render.js';
 
 const siteHeaderInfoElement = document.querySelector('.trip-main');
 const createEventBtn = document.querySelector('.trip-main__event-add-btn');
@@ -48,24 +52,64 @@ const getCurrentOffers = (eventData, offersData) => {
 
 export default class TripEventsPresenter {
   #tripListComponent = new TripListView();
+  #loadingComponent = new LoadingView();
   #eventsContainer = null;
+  #sortComponent = null;
   #eventsModel = null;
+  #filterModel = null;
   #events = [];
   #offers = [];
+  #destionations = [];
+  #eventPresenters = new Map();
+  #filterType = FilterType.EVERYTHING;
+  #currentSortType = SortType.DAY_DOWN;
+  #isLoading = true;
 
-  constructor(eventsContainer, eventsModel) {
+  constructor(eventsContainer, eventsModel, filterModel) {
     this.#eventsContainer = eventsContainer;
     this.#eventsModel = eventsModel;
-    this.#offers = [...this.#eventsModel.offers];
+    this.#filterModel = filterModel;
+
+    this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#eventsModel.addObserver(this.#handleModelEvent);
   }
 
   get tripEvents() {
-    this.#events = this.#eventsModel.events;
-    return this.#events;
+    this.#filterType = this.#filterModel.eventsFilter;
+    const events = this.#eventsModel.events;
+    const filteredEvents = eventsFilter[this.#filterType](events);
+
+    switch(this.#currentSortType) {
+      case SortType.PRICE_DOWN:
+        return filteredEvents.slice().sort((tripEventA, tripEventB) => tripEventB.basePrice - tripEventA.basePrice);
+      case SortType.TIME_DOWN:
+        return filteredEvents.slice().sort((tripEventA, tripEventB) => getEventsDuration(tripEventB) - getEventsDuration(tripEventA));
+      default:
+        return filteredEvents;
+    }
+  }
+
+  get offers() {
+    this.#offers = this.#eventsModel.offers;
+    return this.#offers;
+  }
+
+  get destinations() {
+    this.#destionations = this.#eventsModel.destinations;
+    return this.#destionations;
   }
 
   init = () => {
     this.#renderEventList();
+  };
+
+  #renderSort = () => {
+    if (this.films.length) {
+      this.#sortComponent = new SortView(this.#currentSortType);
+      this.#sortComponent.setSortControlClickHandler(this.#handleSortTypeChange);
+
+      render(this.#sortComponent, this.eventsContainer);
+    }
   };
 
   #renderEvent = (eventData, currentOffers) => {
@@ -85,11 +129,50 @@ export default class TripEventsPresenter {
     }
 
     render(new TripInfoView(), siteHeaderInfoElement, 'afterbegin');
-    render(new SortView(), this.#eventsContainer);
+
     render(this.#tripListComponent, this.#eventsContainer);
 
     for (let i = 0; i < this.#events.length; i++) {
       this.#renderEvent(this.#events[i], getCurrentOffers(this.#events[i], this.#offers));
     }
+  };
+
+  #clearEventList = () => {};
+
+  #handleModelEvent = (updateType, updatedEvent) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        if (this.#eventPresenters.get(updatedEvent.id)) {
+          this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+        }
+        break;
+      case UpdateType.MINOR:
+        this.#clearEventList();
+        this.#renderEventList();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearEventList({
+          resetRenderedFilmCount: true,
+          resetSortType: true,
+          isCommentModelInit: updatedEvent?.isCommentModelInit,
+        });
+        this.#renderEventList();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.init();
+        break;
+    }
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#currentSortType = sortType;
+    this.#clearEventList();
+    this.#renderEventList();
   };
 }
