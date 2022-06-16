@@ -1,5 +1,4 @@
 import TripInfoView from '../view/trip-info-view.js';
-import FilterView from '../view/filter-view.js';
 import SortView from '../view/sort-view.js';
 import TripListView from '../view/trip-event-list-view.js';
 import TripEventContainerView from '../view/trip-event-containter-view.js';
@@ -9,7 +8,6 @@ import EditFormView from '../view/edit-form-view.js';
 import { render, replace } from '../framework/render.js';
 
 const siteHeaderInfoElement = document.querySelector('.trip-main');
-const siteHeaderFilterElement = siteHeaderInfoElement.querySelector('.trip-controls__filters');
 const createEventBtn = document.querySelector('.trip-main__event-add-btn');
 
 const addCreateForm = (eventData, offersData) => {
@@ -67,7 +65,6 @@ export default class TripEventsPresenter {
   }
 
   init = () => {
-    render(new FilterView(this.#events.length), siteHeaderFilterElement);
     this.#renderEventList();
   };
 

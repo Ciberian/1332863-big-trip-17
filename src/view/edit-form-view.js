@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { offerType } from '../const.js';
-import { humanizeEventDate } from '../util.js';
+import { humanizeEventDate } from '../utils/trip-events.js';
 
 const createEditFormTemplate = (eventData, offersData) => {
   const { basePrice, dateFrom, dateTo, offers: offerIds, destination, type } = eventData;

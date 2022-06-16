@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventDate, padStart } from '../util.js';
+import { humanizeEventDate, padStart } from '../utils/trip-events.js';
 import dayjs from 'dayjs';
 
 const createTripEventTemplate = (eventData, currentOffers) => {
