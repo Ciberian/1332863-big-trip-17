@@ -9,7 +9,7 @@ export default class EventsModel extends Observable {
 
   constructor(eventsApiService) {
     super();
-    this.eventsApiService = eventsApiService;
+    this.#eventsApiService = eventsApiService;
   }
 
   get events () {
@@ -26,7 +26,7 @@ export default class EventsModel extends Observable {
 
   init = async () => {
     try {
-      const events = await this.#eventsApiService.events;
+      const events = await this.#eventsApiService.getEvents();
       this.#offers = await this.#eventsApiService.getAllOffers();
       this.#destinations = await this.#eventsApiService.getAllDestinations();
       this.#events = events.map(this.#adaptToClient);

@@ -1,19 +1,18 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { offerType } from '../const.js';
 import { humanizeEventDate } from '../utils/trip-events.js';
 
 const createEditFormTemplate = (eventData, offersData) => {
   const { basePrice, dateFrom, dateTo, offers: offerIds, destination, type } = eventData;
 
-  const currentOffers = offersData.find((offer) => offer.type === type);
-
   const renderEventTypeItems = () => offerType.reduce(((eventTypeTemplate, offer) => (
-    eventTypeTemplate += `<div class="event__type-item">
-    <input id="event-type-${offer}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer}" ${(offer === type) ? 'checked' : ''}>
-    <label class="event__type-label  event__type-label--${offer}" for="event-type-${offer}-1">${offer[0].toUpperCase()}${offer.slice(1)}</label>
+    eventTypeTemplate += `
+    <div class="event__type-item">
+      <input id="event-type-${offer}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer}" ${(offer === type) ? 'checked' : ''}>
+      <label class="event__type-label  event__type-label--${offer}" for="event-type-${offer}-1">${offer[0].toUpperCase()}${offer.slice(1)}</label>
     </div>`)), '');
 
-  const renderEventOffers = () => currentOffers.offers.reduce(((eventOffersTemplate, offer) => (
+  const renderEventOffers = () => offersData.reduce(((eventOffersTemplate, offer) => (
     eventOffersTemplate += `
     <div class="event__available-offers">
       <div class="event__offer-selector">
@@ -100,7 +99,7 @@ const createEditFormTemplate = (eventData, offersData) => {
   </form>`;
 };
 
-export default class EditFormView extends AbstractView {
+export default class EditFormView extends AbstractStatefulView {
   #eventData = null;
   #offers = null;
 
@@ -114,13 +113,33 @@ export default class EditFormView extends AbstractView {
     return createEditFormTemplate(this.#eventData, this.#offers);
   }
 
-  setClickHandler = (callback) => {
-    this._callback.click = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+  setCloseButtonClickHandler = (callback) => {
+    this._callback.closeClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeButtonClickHandler);
   };
 
-  #clickHandler = (evt) => {
+  setDeleteButtonClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteButtonClickHandler);
+  };
+
+  setSaveButtonClickHandler = (callback) => {
+    this._callback.saveClick = callback;
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#saveButtonClickHandler);
+  };
+
+  #closeButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.closeClick();
+  };
+
+  #deleteButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick();
+  };
+
+  #saveButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.saveClick();
   };
 }

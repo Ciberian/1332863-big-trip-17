@@ -8,10 +8,8 @@ const Method = {
 };
 
 export default class EventsApiService extends ApiService {
-  get events() {
-    return this._load({url: 'points'})
-      .then(ApiService.parseResponse);
-  }
+
+  getEvents = () => this._load({url: 'points'}).then(ApiService.parseResponse);
 
   getAllOffers = ()  => this._load({url: 'offers'}).then(ApiService.parseResponse);
 

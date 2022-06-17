@@ -7,6 +7,13 @@ const isFutureEvent = (eventDate) => eventDate && dayjs().isSameOrAfter(eventDat
 const isPastEvent = (eventDate) => eventDate && dayjs().isBefore(eventDate, 'D');
 const getEventsDuration = (tripEvent) => dayjs(tripEvent.dateFrom).diff(dayjs(tripEvent.dateTo));
 
+const getCurrentOffers = (eventData, allOffers) => {
+  const { offers: offerIds, type: offerType } = eventData;
+  const currentOffers = allOffers.find((offer) => offer.type === offerType);
+
+  return currentOffers.offers.filter(({ id }) => offerIds.some((offerId) => offerId === id));
+};
+
 const padStart = (number) => (number < 10) ? String(number).padStart(2, '0') : number;
 
-export { humanizeEventDate, isFutureEvent, isPastEvent, getEventsDuration, padStart };
+export { humanizeEventDate, isFutureEvent, isPastEvent, getEventsDuration, getCurrentOffers, padStart };
