@@ -89,9 +89,8 @@ export default class TripEventsPresenter {
       return;
     }
 
-    if (!this.events) {
-      render(new EmptyListView(this.#filterType), this.#eventsContainer);
-      return;
+    if (!this.events.length) {
+      this.#renderNoEvents();
     }
 
     this.#renderSort();
@@ -101,7 +100,19 @@ export default class TripEventsPresenter {
     }
   };
 
-  #clearEventList = () => {};
+  #clearEventList = (resetSortType = false) => {
+    remove(this.#sortComponent);
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
+
+    if (this.#noEventsComponent) {
+      remove(this.#noEventsComponent);
+    }
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DAY_DOWN;
+    }
+  };
 
   #handleModelEvent = (updateType, updatedEvent) => {
     switch (updateType) {
@@ -115,11 +126,7 @@ export default class TripEventsPresenter {
         this.#renderEventList();
         break;
       case UpdateType.MAJOR:
-        this.#clearEventList({
-          resetRenderedFilmCount: true,
-          resetSortType: true,
-          isCommentModelInit: updatedEvent?.isCommentModelInit,
-        });
+        this.#clearEventList({ resetSortType: true });
         this.#renderEventList();
         break;
       case UpdateType.INIT:

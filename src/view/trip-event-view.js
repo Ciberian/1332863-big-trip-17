@@ -1,14 +1,11 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventDate, padStart } from '../utils/trip-events.js';
-import dayjs from 'dayjs';
+import { humanizeEventDate, padStart, getEventsDuration } from '../utils/trip-events.js';
 
 const createTripEventTemplate = (eventData, currentOffers) => {
   const { basePrice, dateFrom, dateTo, isFavorite, destination, type } = eventData;
 
-  const getEventDuration = () => {
-    const date1 = dayjs(dateTo);
-    const date2 = dayjs(dateFrom);
-    const minutes = Math.abs(date1.diff(date2, 'minute'));
+  const getFormattedDuration = () => {
+    const minutes = getEventsDuration(eventData);
 
     const getRestTime = (restMinutes) => {
       if (restMinutes < 60) {
@@ -55,11 +52,11 @@ const createTripEventTemplate = (eventData, currentOffers) => {
         <h3 class="event__title">${type} ${destination.name}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${dateFrom}">${humanizeEventDate(dateFrom, 'HH:MM')}</time>
+            <time class="event__start-time" datetime="${dateFrom}">${humanizeEventDate(dateFrom, 'HH:mm')}</time>
             &mdash;
-            <time class="event__end-time" datetime="${dateTo}">${humanizeEventDate(dateTo, 'HH:MM')}</time>
+            <time class="event__end-time" datetime="${dateTo}">${humanizeEventDate(dateTo, 'HH:mm')}</time>
           </p>
-          <p class="event__duration">${getEventDuration()}</p>
+          <p class="event__duration">${getFormattedDuration()}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
@@ -96,22 +93,22 @@ export default class TripEventView extends AbstractView {
   }
 
   setEditButtonClickHandler = (callback) => {
-    this._callback.click = callback;
+    this._callback.editClick = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   };
 
   setFavoriteClickHandler = (callback) => {
-    this._callback.click = callback;
+    this._callback.favoriteClick = callback;
     this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
   };
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.editClick();
   };
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.favoriteClick();
   };
 }

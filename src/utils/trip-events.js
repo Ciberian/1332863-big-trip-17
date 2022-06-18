@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter.js';
-dayjs.extend(isSameOrAfter);
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore.js';
+dayjs.extend(isSameOrBefore);
 
-const humanizeEventDate = (releaseDate, formatType) => dayjs(releaseDate).format(formatType);
-const isFutureEvent = (eventDate) => eventDate && dayjs().isSameOrAfter(eventDate, 'D');
-const isPastEvent = (eventDate) => eventDate && dayjs().isBefore(eventDate, 'D');
-const getEventsDuration = (tripEvent) => dayjs(tripEvent.dateFrom).diff(dayjs(tripEvent.dateTo));
+const humanizeEventDate = (eventDate, formatType) => dayjs(eventDate).format(formatType);
+const isFutureEvent = (dateFrom, dateTo) => dayjs().isSameOrBefore(dateFrom, 'D') || (dayjs().isAfter(dateFrom, 'D') && dayjs().isBefore(dateTo, 'D'));
+const isPastEvent = (dateFrom, dateTo) => dayjs().isAfter(dateTo, 'D') || (dayjs().isAfter(dateFrom, 'D') && dayjs().isBefore(dateTo, 'D'));
+const getEventsDuration = (tripEvent) => dayjs(tripEvent.dateTo).diff(dayjs(tripEvent.dateFrom), 'minute');
 
 const getCurrentOffers = (eventData, allOffers) => {
   const { offers: offerIds, type: offerType } = eventData;

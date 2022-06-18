@@ -58,9 +58,7 @@ export default class FilterPresenter {
     this.init();
   };
 
-  #handleFilterTypeChange = (clickEvt) => {
-    const filterType = (clickEvt.target.nodeName === 'INPUT') ? clickEvt.target.value : '';
-
+  #handleFilterTypeChange = (filterType) => {
     if (this.#filterModel.filmsFilter === filterType) {
       return;
     }
