@@ -18,14 +18,14 @@ export default class EventPresenter {
     this.#changeData = changeData;
   }
 
-  init = (tripEvent, offers) => {
+  init = (tripEvent, offers, destination) => {
     this.#tripEvent = tripEvent;
 
     const prevEventComponent = this.#tripEventComponent;
     const prevEditFormComponent = this.#editFormComponent;
 
     this.#tripEventComponent = new TripEventView(this.#tripEvent, offers);
-    this.#editFormComponent = new EditFormView(this.#tripEvent, offers);
+    this.#editFormComponent = new EditFormView(this.#tripEvent, offers, destination);
 
     this.#tripEventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#tripEventComponent.setEditButtonClickHandler(this.#handleEditButtonClick);
@@ -79,7 +79,7 @@ export default class EventPresenter {
 
   #handleFavoriteClick = () => {
     this.#changeData(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_EVENT,
       UpdateType.MINOR,
       {...this.#tripEvent, isFavorite: !this.#tripEvent.isFavorite},
     );

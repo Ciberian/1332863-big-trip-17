@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "dayjs": "1.11.1",
+    "flatpickr": "4.6.13",
     "i": "0.3.7",
     "npm": "8.9.0"
   }

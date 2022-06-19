@@ -14,6 +14,8 @@ const getCurrentOffers = (eventData, allOffers) => {
   return currentOffers.offers.filter(({ id }) => offerIds.some((offerId) => offerId === id));
 };
 
+const getCurrentDestination = (eventData, allDestinations) => allDestinations.find((destination) => destination.name === eventData.destination.name);
+
 const padStart = (number) => (number < 10) ? String(number).padStart(2, '0') : number;
 
-export { humanizeEventDate, isFutureEvent, isPastEvent, getEventsDuration, getCurrentOffers, padStart };
+export { humanizeEventDate, isFutureEvent, isPastEvent, getEventsDuration, getCurrentOffers, getCurrentDestination, padStart };

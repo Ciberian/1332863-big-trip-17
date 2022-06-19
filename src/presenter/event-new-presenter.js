@@ -8,52 +8,82 @@
 //   createEventBtn.disabled = true;
 // };
 
-import {remove, render, RenderPosition} from '../framework/render.js';
-import TaskEditView from '../view/task-edit-view.js';
-import {UserAction, UpdateType} from '../const.js';
+import { remove, render, RenderPosition } from '../framework/render.js';
+import EditFormView from '../view/edit-form-view.js';
+import { UserAction, UpdateType } from '../const.js';
 
-export default class TaskNewPresenter {
-  #taskListContainer = null;
+export default class EventNewPresenter {
+  #eventListContainer = null;
   #changeData = null;
-  #taskEditComponent = null;
+  #editFormComponent = null;
   #destroyCallback = null;
 
-  constructor(taskListContainer, changeData) {
-    this.#taskListContainer = taskListContainer;
+  constructor(eventListContainer, changeData) {
+    this.#eventListContainer = eventListContainer;
     this.#changeData = changeData;
   }
 
   init = (callback) => {
     this.#destroyCallback = callback;
 
-    if (this.#taskEditComponent !== null) {
+    if (this.#editFormComponent !== null) {
       return;
     }
 
-    this.#taskEditComponent = new TaskEditView();
-    this.#taskEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    this.#taskEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
+    this.#editFormComponent = new EditFormView();
+    this.#editFormComponent.setDeleteButtonClickHandler(this.#handleDeleteButtonClick);
+    this.#editFormComponent.setSaveButtonClickHandler(this.#handleSaveButtonClick);
 
-    render(this.#taskEditComponent, this.#taskListContainer, RenderPosition.AFTERBEGIN);
+    render(this.#editFormComponent, this.#eventListContainer, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
   destroy = () => {
-    if (this.#taskEditComponent === null) {
+    if (this.#editFormComponent === null) {
       return;
     }
 
     this.#destroyCallback?.();
 
-    remove(this.#taskEditComponent);
-    this.#taskEditComponent = null;
+    remove(this.#editFormComponent);
+    this.#editFormComponent = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
+  #deleteEditForm = () => {
+    remove(this.#editFormComponent);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #addEditForm = () => {
+    render(this.#editFormComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #handleNewEventButtonClick = () => {
+    this.#addEditForm();
+  };
+
+  #handleSaveButtonClick = (tripEvent) => {
+    this.#changeData(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      tripEvent,
+    );
+  };
+
+  #handleDeleteButtonClick = (tripEvent) => {
+    this.#changeData(
+      UserAction.DELETE_TASK,
+      UpdateType.MINOR,
+      tripEvent,
+    );
+  };
+
   setSaving = () => {
-    this.#taskEditComponent.updateElement({
+    this.#editFormComponent.updateElement({
       isDisabled: true,
       isSaving: true,
     });
@@ -61,14 +91,14 @@ export default class TaskNewPresenter {
 
   setAborting = () => {
     const resetFormState = () => {
-      this.#taskEditComponent.updateElement({
+      this.#editFormComponent.updateElement({
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
       });
     };
 
-    this.#taskEditComponent.shake(resetFormState);
+    this.#editFormComponent.shake(resetFormState);
   };
 
   #handleFormSubmit = (task) => {
