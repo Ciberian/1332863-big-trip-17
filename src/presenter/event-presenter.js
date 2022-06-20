@@ -27,14 +27,14 @@ export default class EventPresenter {
     this.#changeMode = changeMode;
   }
 
-  init = (tripEvent, offers, destination) => {
+  init = (tripEvent, offers, destinations) => {
     this.#tripEvent = tripEvent;
 
     const prevEventComponent = this.#tripEventComponent;
     const prevEditFormComponent = this.#editFormComponent;
 
-    this.#tripEventComponent = new TripEventView(this.#tripEvent, offers);
-    this.#editFormComponent = new EditFormView(this.#tripEvent, offers, destination, this.#isEditMode);
+    this.#tripEventComponent = new TripEventView(tripEvent, offers);
+    this.#editFormComponent = new EditFormView(offers, destinations, tripEvent, this.#isEditMode);
 
     this.#tripEventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#tripEventComponent.setEditButtonClickHandler(this.#handleEditButtonClick);

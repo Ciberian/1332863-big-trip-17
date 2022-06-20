@@ -35,8 +35,10 @@ const createTripEventTemplate = (eventData, currentOffers) => {
     }
   };
 
-  const renderOffers = () => currentOffers.reduce(((offersTemplate, offer) => (
-    offersTemplate += `<li class="event__offer">
+  const renderOffers = () => currentOffers.
+    filter((offer) => eventData.offers.some((id) => id === offer.id)).
+    reduce(((offersTemplate, offer) => (
+      offersTemplate += `<li class="event__offer">
       <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${offer.price}</span>

@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { humanizeEventDate, getCurrentOffers, getCurrentDestination } from '../utils/trip-events.js';
+import { getCurrentOffers, getCurrentDestination } from '../utils/trip-events.js';
 import { offerType } from '../const.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
@@ -97,10 +97,10 @@ const createEditFormTemplate = (state) => {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeEventDate(dateFrom, 'DD/MM/YY HH:mm')}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeEventDate(dateTo, 'DD/MM/YY HH:mm')}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -113,9 +113,6 @@ const createEditFormTemplate = (state) => {
 
         <button class="event__save-btn  btn  btn--blue" type="submit">${isSaving? 'Saving...' : 'Save'}</button>
         <button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting...' : 'Delete'}</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
 
       </header>
       ${ offerIds?.length || currentDestination ? `
@@ -142,13 +139,13 @@ const createEditFormTemplate = (state) => {
   </li>`;
 };
 
-export default class EditFormView extends AbstractStatefulView {
+export default class CreateFormView extends AbstractStatefulView {
   #startDatepicker = null;
   #endDatepicker = null;
 
   constructor(allOffers, allDestinations, eventData = BLANK_EVENT) {
     super();
-    this._state = EditFormView.parseEventDataToState(allOffers, allDestinations, eventData);
+    this._state = CreateFormView.parseEventDataToState(allOffers, allDestinations, eventData);
 
     this.#setInnerHandlers();
     this.#setStartDatepicker();
@@ -175,13 +172,8 @@ export default class EditFormView extends AbstractStatefulView {
 
   reset = (tripEvent) => {
     this.updateElement(
-      EditFormView.parseTaskToState(tripEvent),
+      CreateFormView.parseTaskToState(tripEvent),
     );
-  };
-
-  setCloseButtonClickHandler = (callback) => {
-    this._callback.closeClick = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeButtonClickHandler);
   };
 
   setDeleteButtonClickHandler = (callback) => {
@@ -198,7 +190,6 @@ export default class EditFormView extends AbstractStatefulView {
     this.#setInnerHandlers();
     this.#setStartDatepicker();
     this.#setEndDatepicker();
-    this.setCloseButtonClickHandler(this._callback.closeClick);
     this.setDeleteButtonClickHandler(this._callback.deleteClick);
     this.setSaveButtonClickHandler(this._callback.saveClick);
   };
@@ -261,19 +252,14 @@ export default class EditFormView extends AbstractStatefulView {
     });
   };
 
-  #closeButtonClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.closeClick();
-  };
-
   #deleteButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.deleteClick(EditFormView.parseStateToEvent(this._state));
+    this._callback.deleteClick(CreateFormView.parseStateToEvent(this._state));
   };
 
   #saveButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.saveClick(EditFormView.parseStateToEvent(this._state));
+    this._callback.saveClick(CreateFormView.parseStateToEvent(this._state));
   };
 
   static parseEventDataToState = (allOffers, allDestinations, tripEvent) => ({

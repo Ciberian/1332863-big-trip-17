@@ -7,9 +7,9 @@ const isFutureEvent = (dateFrom, dateTo) => dayjs().isSameOrBefore(dateFrom, 'D'
 const isPastEvent = (dateFrom, dateTo) => dayjs().isAfter(dateTo, 'D') || (dayjs().isAfter(dateFrom, 'D') && dayjs().isBefore(dateTo, 'D'));
 const getEventsDuration = (tripEvent) => dayjs(tripEvent.dateTo).diff(dayjs(tripEvent.dateFrom), 'minute');
 
-const getCurrentOffers = (eventData, allOffers) => allOffers.find((offer) => offer.type === eventData.type);
+const getCurrentOffers = (eventType, allOffers) => allOffers.find((offer) => offer.type === eventType);
 
-const getCurrentDestination = (eventData, allDestinations) => allDestinations.find((destination) => destination.name === eventData.destination.name);
+const getCurrentDestination = (destinationName, allDestinations) => allDestinations.find((destination) => destination.name === destinationName);
 
 const padStart = (number) => (number < 10) ? String(number).padStart(2, '0') : number;
 

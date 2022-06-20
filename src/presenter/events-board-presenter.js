@@ -7,7 +7,7 @@ import EventPresenter from './event-presenter.js';
 import EventNewPresenter from './event-new-presenter.js';
 import { eventsFilter } from '../utils/events-filter.js';
 import { FilterType, SortType, UpdateType, UserAction } from '../const.js';
-import { getEventsDuration, getCurrentOffers, getCurrentDestination } from '../utils/trip-events.js';
+import { getEventsDuration } from '../utils/trip-events.js';
 import { render, remove } from '../framework/render.js';
 
 const TimeLimit = {
@@ -15,7 +15,7 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
-export default class TripEventsPresenter {
+export default class EventsBoardPresenter {
   #tripEventListComponent = new TripEventListView();
   #loadingComponent = new LoadingView();
   #noEventsComponent = null;
@@ -49,7 +49,7 @@ export default class TripEventsPresenter {
     const events = this.#eventsModel.events;
     const filteredEvents = eventsFilter[this.#filterType](events);
 
-    switch(this.#currentSortType) {
+    switch (this.#currentSortType) {
       case SortType.PRICE_DOWN:
         return filteredEvents.slice().sort((tripEventA, tripEventB) => tripEventB.basePrice - tripEventA.basePrice);
       case SortType.TIME_DOWN:
@@ -76,7 +76,7 @@ export default class TripEventsPresenter {
   createEvent = (callback) => {
     this.#currentSortType = SortType.DAY_DOWN;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#eventNewPresenter.init(callback);
+    this.#eventNewPresenter.init(callback, this.offers, this.destinations);
   };
 
   #handleModeChange = () => {
@@ -99,10 +99,8 @@ export default class TripEventsPresenter {
 
   #renderEvent = (tripEvent) => {
     const eventPresenter = new EventPresenter(this.#eventsModel, this.#tripEventListComponent.element, this.#handleViewAction, this.#handleModeChange);
-    const currentOffers = getCurrentOffers(tripEvent, this.offers);
-    const destination = getCurrentDestination(tripEvent, this.destinations);
 
-    eventPresenter.init(tripEvent, currentOffers.offers, destination);
+    eventPresenter.init(tripEvent, this.offers, this.destinations);
     this.#eventPresenters.set(tripEvent.id, eventPresenter);
   };
 
@@ -146,7 +144,7 @@ export default class TripEventsPresenter {
         this.#eventPresenters.get(update.id).setSaving();
         try {
           await this.#eventsModel.updateEvent(updateType, update);
-        } catch(err) {
+        } catch (err) {
           this.#eventPresenters.get(update.id).setAborting();
         }
         break;
@@ -154,7 +152,7 @@ export default class TripEventsPresenter {
         this.#eventNewPresenter.setSaving();
         try {
           await this.#eventsModel.addEvent(updateType, update);
-        } catch(err) {
+        } catch (err) {
           this.#eventNewPresenter.setAborting();
         }
         break;
@@ -162,7 +160,7 @@ export default class TripEventsPresenter {
         this.#eventPresenters.get(update.id).setDeleting();
         try {
           await this.#eventsModel.deleteTask(updateType, update);
-        } catch(err) {
+        } catch (err) {
           this.#eventPresenters.get(update.id).setAborting();
         }
         break;

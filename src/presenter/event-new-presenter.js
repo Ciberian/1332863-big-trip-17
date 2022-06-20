@@ -1,50 +1,49 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
-import EditFormView from '../view/edit-form-view.js';
+import CreateFormView from '../view/create-form-view.js';
 import { UserAction, UpdateType } from '../const.js';
 
 export default class EventNewPresenter {
   #eventListContainer = null;
   #changeData = null;
-  #editFormComponent = null;
+  #createFormComponent = null;
   #destroyCallback = null;
-  #isNewEvent = true;
 
   constructor(eventListContainer, changeData) {
     this.#eventListContainer = eventListContainer;
     this.#changeData = changeData;
   }
 
-  init = (callback) => {
+  init = (callback, offers, destinations) => {
     this.#destroyCallback = callback;
 
-    if (this.#editFormComponent !== null) {
+    if (this.#createFormComponent !== null) {
       return;
     }
 
-    this.#editFormComponent = new EditFormView();
-    this.#editFormComponent.setSaveButtonClickHandler(this.#handleSaveButtonClick);
-    this.#editFormComponent.setDeleteButtonClickHandler(this.#handleDeleteButtonClick);
+    this.#createFormComponent = new CreateFormView(offers, destinations);
+    this.#createFormComponent.setSaveButtonClickHandler(this.#handleSaveButtonClick);
+    this.#createFormComponent.setDeleteButtonClickHandler(this.#handleDeleteButtonClick);
 
-    render(this.#editFormComponent, this.#eventListContainer, RenderPosition.AFTERBEGIN);
+    render(this.#createFormComponent, this.#eventListContainer, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
   destroy = () => {
-    if (this.#editFormComponent === null) {
+    if (this.#createFormComponent === null) {
       return;
     }
 
     this.#destroyCallback?.();
 
-    remove(this.#editFormComponent);
-    this.#editFormComponent = null;
+    remove(this.#createFormComponent);
+    this.#createFormComponent = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   setSaving = () => {
-    this.#editFormComponent.updateElement({
+    this.#createFormComponent.updateElement({
       isDisabled: true,
       isSaving: true,
     });
@@ -52,14 +51,14 @@ export default class EventNewPresenter {
 
   setAborting = () => {
     const resetFormState = () => {
-      this.#editFormComponent.updateElement({
+      this.#createFormComponent.updateElement({
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
       });
     };
 
-    this.#editFormComponent.shake(resetFormState);
+    this.#createFormComponent.shake(resetFormState);
   };
 
   #handleSaveButtonClick = (tripEvent) => {
