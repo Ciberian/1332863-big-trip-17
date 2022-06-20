@@ -1,13 +1,3 @@
-// const createEventBtn = document.querySelector('.trip-main__event-add-btn');
-
-// const addCreateForm = (eventData, offersData) => {
-//   const createFormContainerComponent = new TripEventContainerView();
-//   const createFormComponent = new EditFormView(eventData, offersData);
-//   render(createFormContainerComponent, document.querySelector('.trip-events__list'), 'AFTERBEGIN');
-//   render(createFormComponent, createFormContainerComponent.element);
-//   createEventBtn.disabled = true;
-// };
-
 import { remove, render, RenderPosition } from '../framework/render.js';
 import EditFormView from '../view/edit-form-view.js';
 import { UserAction, UpdateType } from '../const.js';
@@ -17,6 +7,7 @@ export default class EventNewPresenter {
   #changeData = null;
   #editFormComponent = null;
   #destroyCallback = null;
+  #isNewEvent = true;
 
   constructor(eventListContainer, changeData) {
     this.#eventListContainer = eventListContainer;
@@ -31,8 +22,8 @@ export default class EventNewPresenter {
     }
 
     this.#editFormComponent = new EditFormView();
-    this.#editFormComponent.setDeleteButtonClickHandler(this.#handleDeleteButtonClick);
     this.#editFormComponent.setSaveButtonClickHandler(this.#handleSaveButtonClick);
+    this.#editFormComponent.setDeleteButtonClickHandler(this.#handleDeleteButtonClick);
 
     render(this.#editFormComponent, this.#eventListContainer, RenderPosition.AFTERBEGIN);
 
@@ -50,36 +41,6 @@ export default class EventNewPresenter {
     this.#editFormComponent = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
-  };
-
-  #deleteEditForm = () => {
-    remove(this.#editFormComponent);
-    document.addEventListener('keydown', this.#escKeyDownHandler);
-  };
-
-  #addEditForm = () => {
-    render(this.#editFormComponent);
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
-  };
-
-  #handleNewEventButtonClick = () => {
-    this.#addEditForm();
-  };
-
-  #handleSaveButtonClick = (tripEvent) => {
-    this.#changeData(
-      UserAction.UPDATE_TASK,
-      UpdateType.MINOR,
-      tripEvent,
-    );
-  };
-
-  #handleDeleteButtonClick = (tripEvent) => {
-    this.#changeData(
-      UserAction.DELETE_TASK,
-      UpdateType.MINOR,
-      tripEvent,
-    );
   };
 
   setSaving = () => {
@@ -101,15 +62,15 @@ export default class EventNewPresenter {
     this.#editFormComponent.shake(resetFormState);
   };
 
-  #handleFormSubmit = (task) => {
+  #handleSaveButtonClick = (tripEvent) => {
     this.#changeData(
-      UserAction.ADD_TASK,
+      UserAction.ADD_EVENT,
       UpdateType.MINOR,
-      task,
+      tripEvent,
     );
   };
 
-  #handleDeleteClick = () => {
+  #handleDeleteButtonClick = () => {
     this.destroy();
   };
 

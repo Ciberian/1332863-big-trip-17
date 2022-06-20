@@ -62,9 +62,10 @@ const createTripEventTemplate = (eventData, currentOffers) => {
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
+        ${currentOffers ? `
         <ul class="event__selected-offers">
           ${renderOffers()}
-        </ul>
+        </ul>` : ''}
         <button class="event__favorite-btn event__favorite-btn${isFavorite ? '--active': ''}" type="button">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">

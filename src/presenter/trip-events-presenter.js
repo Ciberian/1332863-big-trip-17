@@ -79,6 +79,11 @@ export default class TripEventsPresenter {
     this.#eventNewPresenter.init(callback);
   };
 
+  #handleModeChange = () => {
+    this.#eventNewPresenter.destroy();
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
   #renderSort = () => {
     if (this.events.length) {
       this.#sortComponent = new SortView(this.#currentSortType);
@@ -93,11 +98,11 @@ export default class TripEventsPresenter {
   };
 
   #renderEvent = (tripEvent) => {
-    const eventPresenter = new EventPresenter(this.#eventsModel, this.#tripEventListComponent.element);
-    const offers = getCurrentOffers(tripEvent, this.offers);
+    const eventPresenter = new EventPresenter(this.#eventsModel, this.#tripEventListComponent.element, this.#handleViewAction, this.#handleModeChange);
+    const currentOffers = getCurrentOffers(tripEvent, this.offers);
     const destination = getCurrentDestination(tripEvent, this.destinations);
 
-    eventPresenter.init(tripEvent, offers, destination);
+    eventPresenter.init(tripEvent, currentOffers.offers, destination);
     this.#eventPresenters.set(tripEvent.id, eventPresenter);
   };
 

@@ -2,6 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeEventDate } from '../utils/trip-events.js';
 import { offerType } from '../const.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -16,7 +17,7 @@ const BLANK_EVENT = {
 };
 
 
-const createEditFormTemplate = (eventData, offersData, destination) => {
+const createEditFormTemplate = (eventData, offersData, destination, isEditMode) => {
   const { basePrice, dateFrom, dateTo, offers: offerIds, type } = eventData;
 
   const renderEventTypeItems = () => offerType.reduce(((eventTypeTemplate, offer) => (
@@ -64,7 +65,7 @@ const createEditFormTemplate = (eventData, offersData, destination) => {
           <label class="event__label  event__type-output" for="event-destination-1">
           ${type[0].toUpperCase()}${type.slice(1)}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? destination.name : ''}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -90,16 +91,20 @@ const createEditFormTemplate = (eventData, offersData, destination) => {
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
+        ${isEditMode ? `
+          <button class="event__rollup-btn" type="button">
+            <span class="visually-hidden">Open event</span>
+          </button>` : ''}
+
       </header>
+      ${ offerIds?.length || destination ? `
       <section class="event__details">
-        ${offerIds.length ? `
+        ${offerIds?.length ? `
           <section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
             ${renderEventOffers()}
           </section>` : ''}
+
         ${destination ? `
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -111,7 +116,7 @@ const createEditFormTemplate = (eventData, offersData, destination) => {
               </div>
             </div>
           </section>` : ''}
-      </section>
+      </section>` : ''}
     </form>
   </li>`;
 };
@@ -120,16 +125,18 @@ export default class EditFormView extends AbstractStatefulView {
   #eventData = null;
   #offers = null;
   #destination = null;
+  #isEditMode = false;
 
-  constructor(eventData = BLANK_EVENT, offers, destination) {
+  constructor(eventData = BLANK_EVENT, offers, destination, isEditMode) {
     super();
     this.#eventData = eventData;
     this.#offers = offers;
     this.#destination = destination;
+    this.#isEditMode = isEditMode;
   }
 
   get template() {
-    return createEditFormTemplate(this.#eventData, this.#offers, this.#destination);
+    return createEditFormTemplate(this.#eventData, this.#offers, this.#destination, this.#isEditMode);
   }
 
   setCloseButtonClickHandler = (callback) => {
