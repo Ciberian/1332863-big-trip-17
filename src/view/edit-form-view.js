@@ -94,7 +94,7 @@ const createEditFormTemplate = (state) => {
             name="event-destination"
             value="${currentDestination ? currentDestination.name : ''}"
             list="destination-list-1"
-            ${isDisabled ? 'disabled' : ''}>
+            ${isDisabled ? 'disabled' : ''} require>
           <datalist id="destination-list-1">
             ${getDestinationsTemplate()}
           </datalist>
@@ -152,9 +152,11 @@ const createEditFormTemplate = (state) => {
 export default class EditFormView extends AbstractStatefulView {
   #startDatepicker = null;
   #endDatepicker = null;
+  #allDestinations = [];
 
   constructor(allOffers, allDestinations, eventData = BLANK_EVENT) {
     super();
+    this.#allDestinations = allDestinations;
     this._state = EditFormView.parseEventDataToState(allOffers, allDestinations, eventData);
 
     this.#setInnerHandlers();
@@ -178,12 +180,6 @@ export default class EditFormView extends AbstractStatefulView {
       this.#endDatepicker.destroy();
       this.#endDatepicker = null;
     }
-  };
-
-  reset = (tripEvent) => {
-    this.updateElement(
-      EditFormView.parseTaskToState(tripEvent),
-    );
   };
 
   setCloseButtonClickHandler = (callback) => {
@@ -272,11 +268,17 @@ export default class EditFormView extends AbstractStatefulView {
 
   #eventPriceInputHandler = (evt) => {
     this._setState({
-      basePrice: Number(evt.target.value),
+      basePrice: Math.abs(Number(evt.target.value))
     });
   };
 
   #destionationListChangeHandler = (evt) => {
+    const destinations = this.#allDestinations.map((destination) => destination.name);
+
+    if (!destinations.includes(evt.target.value)) {
+      evt.target.value = '';
+    }
+
     this.updateElement({destination: {name: evt.target.value}});
   };
 

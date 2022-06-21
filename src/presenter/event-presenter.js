@@ -66,7 +66,6 @@ export default class EventPresenter {
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
-      this.#editFormComponent.reset(this.#tripEvent);
       this.#replaceFormToEvent();
     }
   };
@@ -120,7 +119,6 @@ export default class EventPresenter {
 
   #replaceFormToEvent = () => {
     replace(this.#tripEventComponent, this.#editFormComponent);
-    this.#editFormComponent.removeElement();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
   };
@@ -128,7 +126,6 @@ export default class EventPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.#editFormComponent.reset(this.#tripEvent);
       this.#replaceFormToEvent();
     }
   };

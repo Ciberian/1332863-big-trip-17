@@ -149,9 +149,11 @@ const createEditFormTemplate = (state) => {
 export default class CreateFormView extends AbstractStatefulView {
   #startDatepicker = null;
   #endDatepicker = null;
+  #allDestinations = [];
 
   constructor(allOffers, allDestinations, eventData = BLANK_EVENT) {
     super();
+    this.#allDestinations = allDestinations;
     this._state = CreateFormView.parseEventDataToState(allOffers, allDestinations, eventData);
 
     this.#setInnerHandlers();
@@ -175,12 +177,6 @@ export default class CreateFormView extends AbstractStatefulView {
       this.#endDatepicker.destroy();
       this.#endDatepicker = null;
     }
-  };
-
-  reset = (tripEvent) => {
-    this.updateElement(
-      CreateFormView.parseTaskToState(tripEvent),
-    );
   };
 
   setDeleteButtonClickHandler = (callback) => {
@@ -264,11 +260,17 @@ export default class CreateFormView extends AbstractStatefulView {
   #eventPriceInputHandler = (evt) => {
     evt.preventDefault();
     this._setState({
-      basePrice: Number(evt.target.value),
+      basePrice: Math.abs(Number(evt.target.value))
     });
   };
 
   #destionationListChangeHandler = (evt) => {
+    const destinations = this.#allDestinations.map((destination) => destination.name);
+
+    if (!destinations.includes(evt.target.value)) {
+      evt.target.value = '';
+    }
+
     this.updateElement({destination: {name: evt.target.value}});
   };
 

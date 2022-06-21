@@ -52,7 +52,7 @@ export default class EventsBoardPresenter {
       case SortType.TIME_DOWN:
         return filteredEvents.slice().sort((tripEventA, tripEventB) => getEventsDuration(tripEventB) - getEventsDuration(tripEventA));
       default:
-        return filteredEvents;
+        return filteredEvents.slice().sort((tripEventA, tripEventB) => new Date(tripEventA.dateFrom).getDate() - new Date(tripEventB.dateFrom).getDate());
     }
   }
 
@@ -143,7 +143,7 @@ export default class EventsBoardPresenter {
           this.#eventNewPresenter.setAborting();
         }
         break;
-      case UserAction.DELETE_TASK:
+      case UserAction.DELETE_EVENT:
         this.#eventPresenters.get(update.id).setDeleting();
         try {
           await this.#eventsModel.deleteEvent(updateType, update);
