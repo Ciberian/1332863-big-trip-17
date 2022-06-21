@@ -3,24 +3,24 @@ import CreateFormView from '../view/create-form-view.js';
 import { UserAction, UpdateType } from '../const.js';
 
 export default class EventNewPresenter {
+  #eventsModel = null;
   #eventListContainer = null;
   #changeData = null;
   #createFormComponent = null;
   #destroyCallback = null;
 
-  constructor(eventListContainer, changeData) {
+  constructor(eventModel, eventListContainer, changeData) {
+    this.#eventsModel = eventModel;
     this.#eventListContainer = eventListContainer;
     this.#changeData = changeData;
   }
 
-  init = (callback, offers, destinations) => {
+  init = (callback) => {
     this.#destroyCallback = callback;
-
     if (this.#createFormComponent !== null) {
       return;
     }
-
-    this.#createFormComponent = new CreateFormView(offers, destinations);
+    this.#createFormComponent = new CreateFormView(this.#eventsModel.offers, this.#eventsModel.destinations);
     this.#createFormComponent.setSaveButtonClickHandler(this.#handleSaveButtonClick);
     this.#createFormComponent.setDeleteButtonClickHandler(this.#handleDeleteButtonClick);
 

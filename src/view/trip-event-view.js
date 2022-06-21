@@ -1,8 +1,9 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventDate, padStart, getEventsDuration } from '../utils/trip-events.js';
+import { humanizeEventDate, padStart, getEventsDuration, getCurrentOffers } from '../utils/trip-events.js';
 
-const createTripEventTemplate = (eventData, currentOffers) => {
-  const { basePrice, dateFrom, dateTo, isFavorite, destination, type } = eventData;
+const createTripEventTemplate = (eventData, allOffers) => {
+  const { basePrice, dateFrom, dateTo, isFavorite, destination, offers, type } = eventData;
+  const currentOffers = getCurrentOffers(type, allOffers);
 
   const getFormattedDuration = () => {
     const minutes = getEventsDuration(eventData);
@@ -35,14 +36,16 @@ const createTripEventTemplate = (eventData, currentOffers) => {
     }
   };
 
-  const renderOffers = () => currentOffers.
-    filter((offer) => eventData.offers.some((id) => id === offer.id)).
-    reduce(((offersTemplate, offer) => (
-      offersTemplate += `<li class="event__offer">
-      <span class="event__offer-title">${offer.title}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offer.price}</span>
-    </li>`)), '');
+  const renderOffers = () => (
+    currentOffers.offers.
+      filter((offer) => offers.some((id) => id === offer.id)).
+      reduce(((offersTemplate, offer) => (
+        offersTemplate += `<li class="event__offer">
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offer.price}</span>
+      </li>`)), ''));
+
 
   return `
     <li class="trip-events__item">
@@ -82,17 +85,17 @@ const createTripEventTemplate = (eventData, currentOffers) => {
 };
 
 export default class TripEventView extends AbstractView {
-  #event = null;
-  #offers = null;
+  #tripEvent = null;
+  #allOffers = null;
 
-  constructor(event, offers) {
+  constructor(tripEvent, allOffers) {
     super();
-    this.#event = event;
-    this.#offers = offers;
+    this.#tripEvent = tripEvent;
+    this.#allOffers = allOffers;
   }
 
   get template() {
-    return createTripEventTemplate(this.#event, this.#offers);
+    return createTripEventTemplate(this.#tripEvent, this.#allOffers);
   }
 
   setEditButtonClickHandler = (callback) => {

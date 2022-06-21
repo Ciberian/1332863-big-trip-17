@@ -17,7 +17,8 @@ export default class EventPresenter {
   #tripEventComponent = null;
   #editFormComponent = null;
   #tripEvent = null;
-  #isEditMode = true;
+  #allOffers = [];
+  #allDestinations = [];
   #mode = Mode.DEFAULT;
 
   constructor(eventsModel, container, changeData, changeMode) {
@@ -25,22 +26,20 @@ export default class EventPresenter {
     this.#tripEventContainer = container;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+
+    this.#allOffers = this.#eventsModel.offers;
+    this.#allDestinations = this.#eventsModel.destinations;
   }
 
-  init = (tripEvent, offers, destinations) => {
+  init = (tripEvent) => {
     this.#tripEvent = tripEvent;
 
     const prevEventComponent = this.#tripEventComponent;
     const prevEditFormComponent = this.#editFormComponent;
 
-    this.#tripEventComponent = new TripEventView(tripEvent, offers);
-    this.#editFormComponent = new EditFormView(offers, destinations, tripEvent, this.#isEditMode);
-
+    this.#tripEventComponent = new TripEventView(tripEvent, this.#allOffers);
     this.#tripEventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#tripEventComponent.setEditButtonClickHandler(this.#handleEditButtonClick);
-    this.#editFormComponent.setCloseButtonClickHandler(this.#handleEventButtonClick);
-    this.#editFormComponent.setDeleteButtonClickHandler(this.#handleDeleteButtonClick);
-    this.#editFormComponent.setSaveButtonClickHandler(this.#handleSaveButtonClick);
 
     if (prevEventComponent === null || prevEditFormComponent === null) {
       render(this.#tripEventComponent, this.#tripEventContainer);
@@ -108,6 +107,11 @@ export default class EventPresenter {
   };
 
   #replaceEventToForm = () => {
+    this.#editFormComponent = new EditFormView(this.#allOffers, this.#allDestinations, this.#tripEvent);
+    this.#editFormComponent.setCloseButtonClickHandler(this.#handleEventButtonClick);
+    this.#editFormComponent.setDeleteButtonClickHandler(this.#handleDeleteButtonClick);
+    this.#editFormComponent.setSaveButtonClickHandler(this.#handleSaveButtonClick);
+
     replace(this.#editFormComponent, this.#tripEventComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#changeMode();
@@ -116,6 +120,7 @@ export default class EventPresenter {
 
   #replaceFormToEvent = () => {
     replace(this.#tripEventComponent, this.#editFormComponent);
+    this.#editFormComponent.removeElement();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
   };
@@ -146,7 +151,7 @@ export default class EventPresenter {
 
   #handleSaveButtonClick = (tripEvent) => {
     this.#changeData(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_EVENT,
       UpdateType.MINOR,
       tripEvent,
     );
@@ -154,7 +159,7 @@ export default class EventPresenter {
 
   #handleDeleteButtonClick = (tripEvent) => {
     this.#changeData(
-      UserAction.DELETE_TASK,
+      UserAction.DELETE_EVENT,
       UpdateType.MINOR,
       tripEvent,
     );

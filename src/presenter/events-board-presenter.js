@@ -22,8 +22,6 @@ export default class EventsBoardPresenter {
   #sortComponent = null;
   #eventsModel = null;
   #filterModel = null;
-  #offers = [];
-  #destionations = [];
   #eventsContainer = null;
   #eventNewPresenter = null;
   #eventPresenters = new Map();
@@ -36,9 +34,8 @@ export default class EventsBoardPresenter {
     this.#eventsContainer = eventsContainer;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
-    this.#offers = eventsModel.offers;
 
-    this.#eventNewPresenter = new EventNewPresenter(this.#tripEventListComponent.element, this.#handleViewAction);
+    this.#eventNewPresenter = new EventNewPresenter(this.#eventsModel, this.#tripEventListComponent.element, this.#handleViewAction);
 
     this.#filterModel.addObserver(this.#handleModelEvent);
     this.#eventsModel.addObserver(this.#handleModelEvent);
@@ -59,16 +56,6 @@ export default class EventsBoardPresenter {
     }
   }
 
-  get offers() {
-    this.#offers = this.#eventsModel.offers;
-    return this.#offers;
-  }
-
-  get destinations() {
-    this.#destionations = this.#eventsModel.destinations;
-    return this.#destionations;
-  }
-
   init = () => {
     this.#renderEventList();
   };
@@ -76,7 +63,7 @@ export default class EventsBoardPresenter {
   createEvent = (callback) => {
     this.#currentSortType = SortType.DAY_DOWN;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#eventNewPresenter.init(callback, this.offers, this.destinations);
+    this.#eventNewPresenter.init(callback);
   };
 
   #handleModeChange = () => {
@@ -100,7 +87,7 @@ export default class EventsBoardPresenter {
   #renderEvent = (tripEvent) => {
     const eventPresenter = new EventPresenter(this.#eventsModel, this.#tripEventListComponent.element, this.#handleViewAction, this.#handleModeChange);
 
-    eventPresenter.init(tripEvent, this.offers, this.destinations);
+    eventPresenter.init(tripEvent);
     this.#eventPresenters.set(tripEvent.id, eventPresenter);
   };
 
@@ -159,7 +146,7 @@ export default class EventsBoardPresenter {
       case UserAction.DELETE_TASK:
         this.#eventPresenters.get(update.id).setDeleting();
         try {
-          await this.#eventsModel.deleteTask(updateType, update);
+          await this.#eventsModel.deleteEvent(updateType, update);
         } catch (err) {
           this.#eventPresenters.get(update.id).setAborting();
         }
