@@ -1,20 +1,56 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import { humanizeEventDate } from '../utils/trip-events.js';
 
-const createTripInfoTemplate = () =>
-  `<section class="trip-main__trip-info  trip-info">
+const createTripInfoTemplate = (tripInfo) => {
+  const { firstDestination, secondDestination, lastDestination, startDate, endDate, totalPrice, isOnlyOneEvent, isOnlyTwoEvents } = tripInfo;
+
+  const getTripInfoTitle = () => {
+    if ((isOnlyOneEvent) ||
+        (isOnlyTwoEvents && firstDestination === lastDestination) ||
+        (firstDestination === secondDestination && secondDestination === lastDestination)) {
+      return firstDestination;
+    }
+
+    if (isOnlyTwoEvents) {
+      return `${firstDestination} &mdash; ${lastDestination}`;
+    }
+
+    if (firstDestination && secondDestination && lastDestination) {
+      return `${firstDestination} &mdash; ${secondDestination} &mdash; ${lastDestination}`;
+    }
+
+    if (firstDestination && lastDestination ) {
+      return `${firstDestination} ... ${lastDestination}`;
+    }
+
+    return '';
+  };
+
+  return `
+  <section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
-      <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
+      <h1 class="trip-info__title">
+        ${getTripInfoTitle()}
+      </h1>
 
-      <p class="trip-info__dates">Mar 18&nbsp;&mdash;&nbsp;20</p>
+      <p class="trip-info__dates">${humanizeEventDate(startDate, 'MMM DD')} &nbsp;&mdash;&nbsp; ${humanizeEventDate(endDate, 'MMM DD')}</p>
     </div>
 
     <p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
+      Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalPrice}</span>
     </p>
   </section>`;
+};
 
 export default class TripInfoView extends AbstractView {
+  #tripInfo = null;
+
+  constructor(tripInfo) {
+    super();
+    this.#tripInfo = tripInfo;
+  }
+
   get template() {
-    return createTripInfoTemplate();
+    return createTripInfoTemplate(this.#tripInfo);
   }
 }

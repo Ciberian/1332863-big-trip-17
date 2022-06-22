@@ -213,7 +213,7 @@ export default class CreateFormView extends AbstractStatefulView {
     this.#startDatepicker = flatpickr(
       this.element.querySelector('#event-start-time-1'),
       {
-        minDate: 'today',
+        maxDate: this._state.dateTo,
         enableTime: true,
         dateFormat: 'd/m/y H:i',
         defaultDate: this._state.dateFrom,
@@ -226,7 +226,7 @@ export default class CreateFormView extends AbstractStatefulView {
     this.#endDatepicker = flatpickr(
       this.element.querySelector('#event-end-time-1'),
       {
-        minDate: 'today',
+        minDate: this._state.dateFrom,
         enableTime: true,
         dateFormat: 'd/m/y H:i',
         defaultDate: this._state.dateTo,

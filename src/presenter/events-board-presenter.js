@@ -1,4 +1,5 @@
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import TripInfoView from '../view/trip-info-view.js';
 import SortView from '../view/sort-view.js';
 import TripEventListView from '../view/trip-event-list-view.js';
 import EmptyListView from '../view/empty-list-view.js';
@@ -7,8 +8,8 @@ import EventPresenter from './event-presenter.js';
 import EventNewPresenter from './event-new-presenter.js';
 import { eventsFilter } from '../utils/events-filter.js';
 import { FilterType, SortType, UpdateType, UserAction } from '../const.js';
-import { getEventsDuration } from '../utils/trip-events.js';
-import { render, remove } from '../framework/render.js';
+import { getEventsDuration, getCurrentOffers } from '../utils/trip-events.js';
+import { render, remove, RenderPosition } from '../framework/render.js';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -19,6 +20,7 @@ export default class EventsBoardPresenter {
   #tripEventListComponent = new TripEventListView();
   #loadingComponent = new LoadingView();
   #noEventsComponent = null;
+  #tripInfoComponent = null;
   #sortComponent = null;
   #eventsModel = null;
   #filterModel = null;
@@ -44,6 +46,11 @@ export default class EventsBoardPresenter {
   get events() {
     this.#filterType = this.#filterModel.eventsFilter;
     const events = this.#eventsModel.events;
+
+    if (!events.length) {
+      return events;
+    }
+
     const filteredEvents = eventsFilter[this.#filterType](events);
 
     switch (this.#currentSortType) {
@@ -52,11 +59,12 @@ export default class EventsBoardPresenter {
       case SortType.TIME_DOWN:
         return filteredEvents.slice().sort((tripEventA, tripEventB) => getEventsDuration(tripEventB) - getEventsDuration(tripEventA));
       default:
-        return filteredEvents.slice().sort((tripEventA, tripEventB) => new Date(tripEventA.dateFrom).getDate() - new Date(tripEventB.dateFrom).getDate());
+        return filteredEvents.slice().sort((tripEventA, tripEventB) => new Date(tripEventA.dateFrom) - new Date(tripEventB.dateFrom));
     }
   }
 
   init = () => {
+    this.#renderTripInfo();
     this.#renderEventList();
   };
 
@@ -66,9 +74,47 @@ export default class EventsBoardPresenter {
     this.#eventNewPresenter.init(callback);
   };
 
-  #handleModeChange = () => {
-    this.#eventNewPresenter.destroy();
-    this.#eventPresenters.forEach((presenter) => presenter.resetView());
+  #renderTripInfo = () => {
+    const allEvents = this.#eventsModel.events;
+    const allOffers = this.#eventsModel.offers;
+
+    if (!allEvents.length) {
+      return;
+    }
+
+    const basePriceSum = allEvents.reduce((sum, tripEvent) => {
+      sum += tripEvent.basePrice;
+      return sum;
+    }, 0);
+
+    const offersPriceSum = allEvents.reduce((totalSum, tripEvent) => {
+      const currentOffers = getCurrentOffers(tripEvent.type, allOffers);
+      const activeCurrentOffers = currentOffers.offers.filter((offer) => tripEvent.offers.some((id) => id === offer.id));
+      const activeOffersPriceSum = activeCurrentOffers.reduce((sum, offer) => {
+        sum += offer.price;
+        return sum;
+      }, 0);
+
+      totalSum += activeOffersPriceSum;
+
+      return totalSum;
+    }, 0);
+
+    const chronologicalEvents = allEvents.slice().sort((tripEventA, tripEventB) => new Date(tripEventA.dateFrom) - new Date(tripEventB.dateFrom));
+
+    const tripInfo = {
+      firstDestination: chronologicalEvents[0].destination.name,
+      secondDestination: chronologicalEvents.length === 3 ? chronologicalEvents[1].destination.name : null,
+      lastDestination: chronologicalEvents[chronologicalEvents.length - 1].destination.name,
+      startDate: allEvents.map((tripEvent) => tripEvent.dateFrom).sort((dateA, dateB) => new Date(dateA) - new Date(dateB))[0],
+      endDate: allEvents.map((tripEvent) => tripEvent.dateTo).sort((dateA, dateB) => new Date(dateB) - new Date(dateA))[0],
+      totalPrice: basePriceSum + offersPriceSum,
+      isOnlyOneEvent: chronologicalEvents.length === 1,
+      isOnlyTwoEvents: chronologicalEvents.length === 2
+    };
+
+    this.#tripInfoComponent = new TripInfoView(tripInfo);
+    render(this.#tripInfoComponent, document.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
   };
 
   #renderSort = () => {
@@ -111,6 +157,7 @@ export default class EventsBoardPresenter {
   #clearEventList = (resetSortType = false) => {
     this.#eventNewPresenter.destroy();
     remove(this.#sortComponent);
+    remove(this.#tripInfoComponent);
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
 
@@ -121,6 +168,11 @@ export default class EventsBoardPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DAY_DOWN;
     }
+  };
+
+  #handleModeChange = () => {
+    this.#eventNewPresenter.destroy();
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
@@ -165,10 +217,12 @@ export default class EventsBoardPresenter {
         break;
       case UpdateType.MINOR:
         this.#clearEventList();
+        this.#renderTripInfo();
         this.#renderEventList();
         break;
       case UpdateType.MAJOR:
         this.#clearEventList({ resetSortType: true });
+        this.#renderTripInfo();
         this.#renderEventList();
         break;
       case UpdateType.INIT:
@@ -186,6 +240,7 @@ export default class EventsBoardPresenter {
 
     this.#currentSortType = sortType;
     this.#clearEventList();
+    this.#renderTripInfo();
     this.#renderEventList();
   };
 }

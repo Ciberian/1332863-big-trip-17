@@ -44,7 +44,6 @@ export default class FilterView extends AbstractView {
   };
 
   #filterControlClickHandler = (evt) => {
-    evt.preventDefault();
     this._callback.filterTypeChange(evt.target.textContent.toLowerCase());
   };
 }

@@ -32,7 +32,7 @@ const createTripEventTemplate = (eventData, allOffers) => {
       case minutes === 60:
         return '$01H 00M';
       default:
-        return padStart(minutes);
+        return `${padStart(minutes)}M`;
     }
   };
 

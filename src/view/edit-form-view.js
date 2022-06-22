@@ -152,11 +152,9 @@ const createEditFormTemplate = (state) => {
 export default class EditFormView extends AbstractStatefulView {
   #startDatepicker = null;
   #endDatepicker = null;
-  #allDestinations = [];
 
   constructor(allOffers, allDestinations, eventData = BLANK_EVENT) {
     super();
-    this.#allDestinations = allDestinations;
     this._state = EditFormView.parseEventDataToState(allOffers, allDestinations, eventData);
 
     this.#setInnerHandlers();
@@ -222,7 +220,7 @@ export default class EditFormView extends AbstractStatefulView {
     this.#startDatepicker = flatpickr(
       this.element.querySelector('#event-start-time-1'),
       {
-        minDate: 'today',
+        maxDate: this._state.dateTo,
         enableTime: true,
         dateFormat: 'd/m/y H:i',
         defaultDate: this._state.dateFrom,
@@ -235,7 +233,7 @@ export default class EditFormView extends AbstractStatefulView {
     this.#endDatepicker = flatpickr(
       this.element.querySelector('#event-end-time-1'),
       {
-        minDate: 'today',
+        minDate: this._state.dateFrom,
         enableTime: true,
         dateFormat: 'd/m/y H:i',
         defaultDate: this._state.dateTo,
@@ -273,7 +271,7 @@ export default class EditFormView extends AbstractStatefulView {
   };
 
   #destionationListChangeHandler = (evt) => {
-    const destinations = this.#allDestinations.map((destination) => destination.name);
+    const destinations = this._state.allDestinations.map((destination) => destination.name);
 
     if (!destinations.includes(evt.target.value)) {
       evt.target.value = '';
