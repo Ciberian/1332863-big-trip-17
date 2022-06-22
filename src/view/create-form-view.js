@@ -61,8 +61,8 @@ const createEditFormTemplate = (state) => {
   const getPicturesTemplate = () => currentDestination.pictures.reduce((picturesTemplate, picture) => (
     picturesTemplate += `<img class="event__photo" src=${picture.src} alt=${picture.description}></img>`), '');
 
-  const getDestinationsTemplate = () => allDestinations.reduce((picturesTemplate, tripDestination) => (
-    picturesTemplate += `<option value=${tripDestination.name}></option>`), '');
+  const getDestinationsTemplate = () => allDestinations.reduce((destinationsTemplate, tripDestination) => (
+    destinationsTemplate += `<option value="${tripDestination.name}"></option>`), '');
 
   return `
   <li class="trip-events__item">
