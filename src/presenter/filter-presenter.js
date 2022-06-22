@@ -58,11 +58,15 @@ export default class FilterPresenter {
     this.init();
   };
 
-  #handleFilterTypeChange = (filterType) => {
-    if (this.#filterModel.filmsFilter === filterType) {
-      return;
-    }
+  #handleFilterTypeChange = (evtTarget) => {
+    if (evtTarget.nodeName === 'INPUT') {
+      const filterType = evtTarget.value;
 
-    this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+      if (this.#filterModel.eventsFilter === filterType) {
+        return;
+      }
+
+      this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+    }
   };
 }
