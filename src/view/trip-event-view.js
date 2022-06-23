@@ -1,6 +1,9 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeEventDate, padStart, getEventsDuration, getCurrentOffers } from '../utils/trip-events.js';
 
+const TOTAL_MINUTES_IN_HOUR = 60;
+const TOTAL_MINUTES_IN_DAY = 1440;
+
 const createTripEventTemplate = (eventData, allOffers) => {
   const { basePrice, dateFrom, dateTo, isFavorite, destination, offers, type } = eventData;
   const currentOffers = getCurrentOffers(type, allOffers);
@@ -9,27 +12,27 @@ const createTripEventTemplate = (eventData, allOffers) => {
     const minutes = getEventsDuration(eventData);
 
     const getRestTime = (restMinutes) => {
-      if (restMinutes < 60) {
+      if (restMinutes < TOTAL_MINUTES_IN_HOUR) {
         return `00H ${padStart(restMinutes)}M`;
       }
 
-      if (restMinutes === 60) {
+      if (restMinutes === TOTAL_MINUTES_IN_HOUR) {
         return '01H 00M';
       }
 
-      if (restMinutes > 60) {
-        return `${padStart(Math.floor(restMinutes/60))}H ${(restMinutes%60) ? padStart(restMinutes%60) : '00'}M`;
+      if (restMinutes > TOTAL_MINUTES_IN_HOUR) {
+        return `${padStart(Math.floor(restMinutes/TOTAL_MINUTES_IN_HOUR))}H ${(restMinutes%TOTAL_MINUTES_IN_HOUR) ? padStart(restMinutes%TOTAL_MINUTES_IN_HOUR) : '00'}M`;
       }
     };
 
     switch(true) {
-      case minutes > 1440:
-        return `${padStart(Math.floor(minutes/1440))}D ${getRestTime(minutes%1440)}`;
-      case minutes === 1440:
+      case minutes > TOTAL_MINUTES_IN_DAY:
+        return `${padStart(Math.floor(minutes/TOTAL_MINUTES_IN_DAY))}D ${getRestTime(minutes%TOTAL_MINUTES_IN_DAY)}`;
+      case minutes === TOTAL_MINUTES_IN_DAY:
         return '01D 00H 00M';
-      case minutes > 60:
-        return `${padStart(Math.floor(minutes/60))}H ${(minutes%60) ? padStart(minutes%60) : '00'}M`;
-      case minutes === 60:
+      case minutes > TOTAL_MINUTES_IN_HOUR:
+        return `${padStart(Math.floor(minutes/TOTAL_MINUTES_IN_HOUR))}H ${(minutes%TOTAL_MINUTES_IN_HOUR) ? padStart(minutes%TOTAL_MINUTES_IN_HOUR) : '00'}M`;
+      case minutes === TOTAL_MINUTES_IN_HOUR:
         return '$01H 00M';
       default:
         return `${padStart(minutes)}M`;

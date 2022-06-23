@@ -149,9 +149,9 @@ export default class EventsBoardPresenter {
 
     this.#renderSort();
     render(this.#tripEventListComponent, this.#eventsContainer);
-    for (let i = 0; i < this.events.length; i++) {
-      this.#renderEvent(this.events[i]);
-    }
+    this.events.forEach((tripEvent) => {
+      this.#renderEvent(tripEvent);
+    });
   };
 
   #clearEventList = (resetSortType = false) => {

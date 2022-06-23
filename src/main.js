@@ -18,7 +18,7 @@ const eventsBoardPresenter = new EventsBoardPresenter(siteMainElement, eventsMod
 const handleNewEventButton = () => {
   newEventButton.disabled = false;
 };
-const handleNewEventButtonClick = () => {
+const newEventButtonClickHandler = () => {
   eventsBoardPresenter.createEvent(handleNewEventButton);
   newEventButton.disabled = true;
 };
@@ -26,5 +26,5 @@ const handleNewEventButtonClick = () => {
 filterPresenter.init();
 eventsBoardPresenter.init();
 eventsModel.init().finally(() => {
-  newEventButton.addEventListener('click', handleNewEventButtonClick);
+  newEventButton.addEventListener('click', newEventButtonClickHandler);
 });
