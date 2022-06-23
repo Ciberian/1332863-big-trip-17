@@ -38,8 +38,8 @@ export default class EventPresenter {
     const prevEditFormComponent = this.#editFormComponent;
 
     this.#tripEventComponent = new TripEventView(tripEvent, this.#allOffers);
-    this.#tripEventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#tripEventComponent.setEditButtonClickHandler(this.#handleEditButtonClick);
+    this.#tripEventComponent.setFavoriteButtonClickHandler(this.#handleFavoriteClick);
+    this.#tripEventComponent.setRollupButtonClickHandler(this.#handleEventRollupButtonClick);
 
     if (prevEventComponent === null || prevEditFormComponent === null) {
       render(this.#tripEventComponent, this.#tripEventContainer);
@@ -107,7 +107,7 @@ export default class EventPresenter {
 
   #replaceEventToForm = () => {
     this.#editFormComponent = new EditFormView(this.#allOffers, this.#allDestinations, this.#tripEvent);
-    this.#editFormComponent.setCloseButtonClickHandler(this.#handleEventButtonClick);
+    this.#editFormComponent.setRollupButtonClickHandler(this.#handleFormRollupButtonClick);
     this.#editFormComponent.setDeleteButtonClickHandler(this.#handleDeleteButtonClick);
     this.#editFormComponent.setSaveButtonClickHandler(this.#handleSaveButtonClick);
 
@@ -119,6 +119,7 @@ export default class EventPresenter {
 
   #replaceFormToEvent = () => {
     replace(this.#tripEventComponent, this.#editFormComponent);
+    this.#editFormComponent.removeElement();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
   };
@@ -130,11 +131,11 @@ export default class EventPresenter {
     }
   };
 
-  #handleEditButtonClick = () => {
+  #handleEventRollupButtonClick = () => {
     this.#replaceEventToForm();
   };
 
-  #handleEventButtonClick = () => {
+  #handleFormRollupButtonClick = () => {
     this.#replaceFormToEvent();
   };
 

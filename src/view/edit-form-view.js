@@ -180,9 +180,9 @@ export default class EditFormView extends AbstractStatefulView {
     }
   };
 
-  setCloseButtonClickHandler = (callback) => {
+  setRollupButtonClickHandler = (callback) => {
     this._callback.closeClick = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeButtonClickHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollupButtonClickHandler);
   };
 
   setDeleteButtonClickHandler = (callback) => {
@@ -199,7 +199,7 @@ export default class EditFormView extends AbstractStatefulView {
     this.#setInnerHandlers();
     this.#setStartDatepicker();
     this.#setEndDatepicker();
-    this.setCloseButtonClickHandler(this._callback.closeClick);
+    this.setRollupButtonClickHandler(this._callback.closeClick);
     this.setDeleteButtonClickHandler(this._callback.deleteClick);
     this.setSaveButtonClickHandler(this._callback.saveClick);
   };
@@ -298,7 +298,7 @@ export default class EditFormView extends AbstractStatefulView {
     this.updateElement({offers: updatedOffers});
   };
 
-  #closeButtonClickHandler = (evt) => {
+  #rollupButtonClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.closeClick();
   };
